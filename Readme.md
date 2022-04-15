@@ -1,14 +1,14 @@
 # Smart Cursor js
 ## Usage
 ```html
-<script src="./SmartCursor.js"></script>
+<script src="./GllCursor.js"></script>
 ```
 **You can change the cursor theme and laziness in the script file**
 ```js
 const THEME = 'BLACK';
 const LAZINESS = 200;
 ```
-**Use the SC-block and SC-text classes to designate interactive elements**
+**Use the gc-block and gc-text classes to designate interactive elements**
 ```html
 <button class="SC-block">Button</button>
 <h1 class="SC-text">Title</h1>
