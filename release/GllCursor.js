@@ -30,21 +30,26 @@
      */
     app.provider('$cursor', function(){
 
-        console.log(app);
-
-        function setTheme(){}
-
         var provider = this;
 
-        provider.theme = "";
-        provider.lazyness = 0,
+        provider._theme = "BLACK";
+        provider._lazyness = 100;
+
+        provider.cursorTheme = function(theme){
+            provider._theme = theme;
+        };
+
+        provider.cursorLazyness = function(lazyness){
+            provider._lazyness = lazyness;
+        }
 
         provider.$get = function(){
-
             return {
-                customize : function(theme, lazyness){
-                    provider.theme = theme;
-                    provider.lazyness = lazyness;
+                customTheme : function(){
+                    return provider._theme;
+                },
+                customLazyness : function(){
+                    return provider._lazyness;
                 }
             };
         };
@@ -61,8 +66,12 @@
     var app = ng.module('gllCursor');
     app.factory('gllCursorFactory', function(){
 
-        var lazyness;
-        var theme;
+        var lazyness = 0;
+        var theme = "";
+        var triggeringTextElements = null;
+        var triggeringBlockElements = null;
+        var lockCursor = false;
+        var cursor = null;
 
         return {
             getTheme: function () {
@@ -71,12 +80,70 @@
             getLazyness: function () {
                 return lazyness;
             },
+            getTriggeringTextElements: function(){
+                return triggeringTextElements;
+            },
+            getTriggeringBlockElements: function(){
+                return triggeringBlockElements;
+            },
+            getLockCursor: function(){
+                return triggeringBlockElements;
+            },
             setTheme: function(data) {
                 theme = data;
             },
             setLazyness: function(data) {
                 lazyness = data;
-            }
+            },
+            setTriggeringTextElements: function(data) {
+                triggeringTextElements = data;
+            },
+            setTriggeringBlockElements: function(data) {
+                triggeringBlockElements = data;
+            },
+            setCursor: function(data) {
+                cursor = data;
+            },
+            setLockCursor: function(data) {
+                lockCursor = data;
+            },
+            setCursorHeight: function(data) {
+                cursor.style.height = data;
+            },
+            setCursorWidth: function(data) {
+                cursor.style.width = data;
+            },
+            setCursorTransform: function(data) {
+                cursor.style.transform = data;
+            },
+            setCursorBorderRadius: function(data) {
+                cursor.style.borderRadius = data;
+            },
+            setCursorPosition: function(data) {
+                cursor.style.position = data;
+            },
+            setCursorTop: function(data) {
+                cursor.style.top = data;
+            },
+            setCursorLeft: function(data) {
+                cursor.style.left = data;
+            },
+            setCursorTransition: function(data) {
+                cursor.style.transition = data;
+            },
+            setCursorZIndex: function(data) {
+                cursor.style.zIndex = data;
+            },
+            setCursorPointerEvents: function(data) {
+                cursor.style.pointerEvents = data;
+            },
+            setCursorBackground: function(data){
+                cursor.style.background = data;
+            },
+            setCursorBorder: function(data){
+                cursor.style.border = data;
+            },
+
 
         };
 
@@ -100,13 +167,11 @@
 
     var app = ng.module('gllCursor');
 
-app.controller('gllCursorController', function ($scope, $cursor, gllCursorService) {
+    app.controller('gllCursorController', function ($scope, $cursor, gllCursorService, $rootScope) {
 
-    function test(){
-        alert("test controller");
-    }
 
-});
+
+    });
 
 }(angular));
 
@@ -119,19 +184,217 @@ app.controller('gllCursorController', function ($scope, $cursor, gllCursorServic
 
     var app = ng.module('gllCursor');
 
-    app.service('gllCursorService', function($cursor){
+    app.service('gllCursorService', function($cursor, gllCursorFactory){
 
         var service = this;
-        service.theme="";
-        service.lazyness=0;
+        service.theView = angular.element("body");
 
-        function setTheme(theme){
-            service.theme = theme;
+        function createGllCursor() {
+            var cursor = document.createElement('div');
+            cursor.id = 'gllCursor';
+            document.body.append(cursor);
+            gllCursorFactory.setCursor(cursor);
         }
 
-        function setTheme(lazyness){
-            service.lazyness = lazyness;
+        function lockCursor(){
+            gllCursorFactory.setLockCursor(true);
         }
+
+        function unlockCursor(){
+            gllCursorFactory.setLockCursor(false);
+        }
+
+        function isCursorLocked(){
+            return !gllCursorFactory.getLockCursor();
+        }
+
+        function cursorDefaults() {
+            gllCursorFactory.setCursorHeight('19pt');
+            gllCursorFactory.setCursorWidth('19pt');
+            gllCursorFactory.setCursorTransform('translate(-50%,-50%)');
+            gllCursorFactory.setCursorBorderRadius('50%');
+            gllCursorFactory.setCursorPosition('fixed');
+            gllCursorFactory.setCursorTop('0');
+            gllCursorFactory.setCursorLeft('0');
+            gllCursorFactory.setCursorTransition(`all ${gllCursorFactory.getLazyness()}ms ease-out`);
+            gllCursorFactory.setCursorZIndex('1040');
+            gllCursorFactory.setCursorPointerEvents('none');
+
+            switch (gllCursorFactory.getTheme()) {
+                case 'BLUE':
+                    gllCursorFactory.setCursorBackground('#010088');
+                    gllCursorFactory.setCursorBorder('1px solid #010088');
+                    break;
+                case 'BLACK':
+                    gllCursorFactory.setCursorBackground('rgba(0,0,0,0.2)');
+                    gllCursorFactory.setCursorBorder('1px solid rgba(20,20,20,0.5)');
+                    break;
+                case 'WHITE':
+                    gllCursorFactory.setCursorBackground('rgba(255,255,255,0.2)');
+                    gllCursorFactory.setCursorBorder('1px solid rgba(230,230,230,0.5)');
+                    break;
+                default:
+                    gllCursorFactory.setCursorBackground('rgba(0,0,0,0.2)');
+                    gllCursorFactory.setCursorBorder('1px solid rgba(20,20,20,0.5)');
+                    break;
+            }
+
+        }
+
+        function cursorText(targetS) {
+            gllCursorFactory.setCursorHeight(targetS);
+            gllCursorFactory.setCursorWidth('1px');
+            gllCursorFactory.setCursorBorderRadius('2pt');
+        }
+
+        function cursorBlock(targetX, targetY, targetH, targetW) {
+            console.log(targetX);
+            gllCursorFactory.setCursorLeft(`${targetX}px`);
+            gllCursorFactory.setCursorTop(`${targetY}px`);
+            gllCursorFactory.setCursorWidth(`${targetW + 0}px`);
+            gllCursorFactory.setCursorHeight(`${targetH + 0}px`);
+            gllCursorFactory.setCursorBorderRadius('2pt');
+            gllCursorFactory.setCursorBackground('rgba(0,0,0,0)');
+            gllCursorFactory.setCursorZIndex(1040);
+
+            switch (gllCursorFactory.getTheme()) {
+                case 'BLUE':
+                    gllCursorFactory.setCursorBorder('1px solid #010088');
+                    break;
+                case 'BLACK':
+                    gllCursorFactory.setCursorBorder('1px solid rgba(20,20,20,0.5)');
+                    break;
+                case 'WHITE':
+                    gllCursorFactory.setCursorBorder('1px solid rgba(230,230,230,0.5)');
+                    break;
+                default:
+                    gllCursorFactory.setCursorBorder('1px solid rgba(20,20,20,0.5)');
+                    break;
+
+
+            }
+
+        }
+
+        function lockOnTextElem(elem) {
+            console.log(elem);
+            let targetW = elem.getBoundingClientRect().width;
+            let targetH = elem.getBoundingClientRect().height;
+            let targetX = targetW / 2 + elem.getBoundingClientRect().left;
+            let targetY = targetH / 2 + elem.getBoundingClientRect().top;
+            let targetS = window.getComputedStyle(elem).fontSize;
+            cursorText(targetS);
+
+        }
+
+        function lockOnBlockElem(elem) {
+            lockCursor();
+            let targetW = elem.getBoundingClientRect().width;
+            let targetH = elem.getBoundingClientRect().height;
+            let targetX = targetW / 2 + elem.getBoundingClientRect().left;
+            let targetY = targetH / 2 + elem.getBoundingClientRect().top;
+            cursorBlock(targetX, targetY, targetH, targetW);
+
+        }
+
+        function findTriggeringTextElements(){
+            var texts = service.theView.find(".gllText");
+            gllCursorFactory.setTriggeringTextElements(texts);
+            for(var i = 0; i < texts.length; i++){
+
+                texts[i].identifier = i;
+                texts[i].onmouseenter = (event => {
+                    var textElement = gllCursorFactory.getTriggeringTextElements()[event.target.identifier];
+                    if (textElement.tagName !== 'HTML' && textElement.tagName !== 'BODY') {
+
+                        lockOnTextElem(textElement);
+
+                    }
+                })
+
+                texts[i].onmouseout = (event => {
+
+                    var textElement = gllCursorFactory.getTriggeringTextElements()[event.target.identifier];
+                    if (textElement.tagName !== 'HTML' && textElement.tagName !== 'BODY') {
+                        unlockCursor();
+                        cursorDefaults();
+                    }
+                })
+
+            }
+        }
+
+        function findTriggeringBlockElements(){
+            var blocks = service.theView.find(".gllBlock");
+            gllCursorFactory.setTriggeringBlockElements(blocks);
+            for(var i = 0; i < blocks.length; i++){
+
+                blocks[i].identifier = i;
+                blocks[i].onmouseenter = (event => {
+                    var blockElement = gllCursorFactory.getTriggeringBlockElements()[event.target.identifier];
+                    if (blockElement.tagName !== 'HTML' && blockElement.tagName !== 'BODY') {
+
+                        lockOnBlockElem(blockElement);
+
+                    }
+                })
+
+                blocks[i].onmouseout = (event => {
+
+                    var blockElement = gllCursorFactory.getTriggeringBlockElements()[event.target.identifier];
+                    if (blockElement.tagName !== 'HTML' && blockElement.tagName !== 'BODY') {
+                        unlockCursor();
+                        cursorDefaults();
+                    }
+                })
+
+            }
+
+        }
+
+
+        function _findTriggeringElements(){
+
+            findTriggeringBlockElements();
+            findTriggeringTextElements();
+
+
+        }
+
+        function _initCursor(){
+            gllCursorFactory.setLazyness($cursor.customLazyness());
+            gllCursorFactory.setTheme($cursor.customTheme());
+            createGllCursor();
+            cursorDefaults();
+
+        }
+
+
+        function _startCursor(){
+            document.onmousemove = (event => {
+
+                let cursorX = event.x;
+                let cursorY = event.y;
+
+                if (!isCursorLocked()) {
+                    gllCursorFactory.setCursorTop(`${cursorY}px`);
+                    gllCursorFactory.setCursorLeft(`${cursorX}px`);
+                    console.log(isCursorLocked());
+                }
+            });
+        }
+
+        return{
+
+            initCursor : _initCursor,
+            findTriggeringElements : _findTriggeringElements,
+            startCursor : _startCursor
+
+
+        }
+
+
+
 
     });
 
@@ -144,9 +407,10 @@ app.controller('gllCursorController', function ($scope, $cursor, gllCursorServic
     'use strict';
 
     var app = ng.module('gllCursor');
-    app.run(function(){
+    app.run(function(gllCursorService){
 
-
+        gllCursorService.initCursor();
+        gllCursorService.startCursor();
 
     });
 
@@ -166,96 +430,8 @@ app.controller('gllCursorController', function ($scope, $cursor, gllCursorServic
 /*
 
 
-.
-
-const THEME = 'BLACK';
-const LAZINESS = 200;
 
 
-const cursor = document.createElement('div');
-const elements = document.querySelectorAll('*');
-cursor.id = 'SmartCursor';
-document.body.append(cursor);
-cursorDefaults();
-let IS_LOCKED = false;
-
-
-function cursorDefaults() {
-    let style = cursor.style;
-    style.height = '19pt';
-    style.width = '19pt';
-    style.transform = 'translate(-50%,-50%)';
-    style.borderRadius = '50%';
-    style.position = 'fixed';
-    style.top = '0';
-    style.left = '0';
-    style.transition = `all ${LAZINESS}ms ease-out`;
-    style.zIndex = '2';
-    style.pointerEvents = 'none';
-
-    switch (THEME) {
-        case 'BLACK':
-            style.background = 'rgba(0,0,0,0.2)';
-            style.border = '1px solid rgba(20,20,20,0.5)';
-            break;
-        case 'WHITE':
-            style.background = 'rgba(255,255,255,0.2)';
-            style.border = '1px solid rgba(230,230,230,0.5)';
-            break;
-        default:
-            style.background = 'rgba(0,0,0,0.2)';
-            style.border = '1px solid rgba(20,20,20,0.5)';
-            break;
-    }
-
-}
-
-function cursorText(targetS) {
-    let style = cursor.style;
-    style.height = targetS;
-    style.width = '1px';
-    cursor.style.borderRadius = '2pt';
-}
-
-function cursorBlock(targetX, targetY, targetH, targetW) {
-    let style = cursor.style;
-    style.left = `${targetX}px`;
-    style.top = `${targetY}px`;
-    style.width = `${targetW + 5}px`;
-    style.height = `${targetH + 5}px`;
-    style.borderRadius = '2pt';
-    style.background = 'rgba(0,0,0,0)';
-
-    switch (THEME) {
-        case 'BLACK':
-            style.border = '1px solid rgba(20,20,20,0.5)';
-            break;
-        case 'WHITE':
-            style.border = '1px solid rgba(230,230,230,0.5)';
-            break;
-        default:
-            style.border = '1px solid rgba(20,20,20,0.5)';
-            break;
-
-
-    }
-
-}
-
-function lockOnElem(elem) {
-    let targetW = elem.getBoundingClientRect().width;
-    let targetH = elem.getBoundingClientRect().height;
-    let targetX = targetW / 2 + elem.getBoundingClientRect().left;
-    let targetY = targetH / 2 + elem.getBoundingClientRect().top;
-
-    if (elem.classList.contains('SC-block')) {
-        IS_LOCKED = true;
-        cursorBlock(targetX, targetY, targetH, targetW);
-    } else if (elem.classList.contains('SC-text')) {
-        let targetS = window.getComputedStyle(elem).fontSize;
-        cursorText(targetS);
-    }
-}
 
 $( document ).ready(function() {
 
@@ -269,19 +445,7 @@ $( document ).ready(function() {
 
         console.log(elements[i].classList);
 
-        elements[i].style.cursor = 'none';
-        elements[i].onmouseenter = (event => {
-            if (elements[i].tagName !== 'HTML' && elements[i].tagName !== 'BODY') {
-                lockOnElem(elements[i]);
-            }
-        })
 
-        elements[i].onmouseout = (event => {
-            if (elements[i].tagName !== 'HTML' && elements[i].tagName !== 'BODY') {
-                IS_LOCKED = false;
-                cursorDefaults();
-            }
-        })
 
         document.onmousemove = (event => {
             let cursorX = event.x;
