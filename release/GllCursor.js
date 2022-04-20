@@ -1,9 +1,6 @@
 /*
- * gllCursor script by Sossio Giallaurito
- * based on SmartCursor by Maxim Dobrovolsky
+ * gllCursor angular module by Sossio Giallaurito sossiogll
  * https://github.com/sossiogll
- * Choose the theme WHITE or BLACK
- * Choose the LAZINESS
  */
 
 
@@ -25,9 +22,6 @@
 
     var app = ng.module('gllCursor');
 
-    /**
-     * An angular service to wrap the reCaptcha API
-     */
     app.provider('$cursor', function(){
 
         var provider = this;
@@ -87,7 +81,7 @@
                 return triggeringBlockElements;
             },
             getLockCursor: function(){
-                return triggeringBlockElements;
+                return lockCursor;
             },
             setTheme: function(data) {
                 theme = data;
@@ -186,9 +180,11 @@
 
     app.service('gllCursorService', function($cursor, gllCursorFactory){
 
+        /**Service variables**/
         var service = this;
         service.theView = angular.element("body");
 
+        /**Factory communications**/
         function createGllCursor() {
             var cursor = document.createElement('div');
             cursor.id = 'gllCursor';
@@ -197,17 +193,20 @@
         }
 
         function lockCursor(){
-            gllCursorFactory.setLockCursor(true);
+            gllCursorFactory.setLockCursor(true)
+            console.log("locked cursor");
         }
 
         function unlockCursor(){
             gllCursorFactory.setLockCursor(false);
+            console.log("unlocked cursor");
         }
 
         function isCursorLocked(){
-            return !gllCursorFactory.getLockCursor();
+            return gllCursorFactory.getLockCursor();
         }
 
+        /**Cursor behaviours**/
         function cursorDefaults() {
             gllCursorFactory.setCursorHeight('19pt');
             gllCursorFactory.setCursorWidth('19pt');
@@ -223,7 +222,7 @@
             switch (gllCursorFactory.getTheme()) {
                 case 'BLUE':
                     gllCursorFactory.setCursorBackground('#010088');
-                    gllCursorFactory.setCursorBorder('1px solid #010088');
+                    gllCursorFactory.setCursorBorder('1px solid #EFEFEF');
                     break;
                 case 'BLACK':
                     gllCursorFactory.setCursorBackground('rgba(0,0,0,0.2)');
@@ -245,21 +244,22 @@
             gllCursorFactory.setCursorHeight(targetS);
             gllCursorFactory.setCursorWidth('1px');
             gllCursorFactory.setCursorBorderRadius('2pt');
+            gllCursorFactory.setCursorBorder('1px solid #010088');
+
         }
 
         function cursorBlock(targetX, targetY, targetH, targetW) {
-            console.log(targetX);
             gllCursorFactory.setCursorLeft(`${targetX}px`);
             gllCursorFactory.setCursorTop(`${targetY}px`);
             gllCursorFactory.setCursorWidth(`${targetW + 0}px`);
             gllCursorFactory.setCursorHeight(`${targetH + 0}px`);
-            gllCursorFactory.setCursorBorderRadius('2pt');
+            gllCursorFactory.setCursorBorderRadius('0pt');
             gllCursorFactory.setCursorBackground('rgba(0,0,0,0)');
             gllCursorFactory.setCursorZIndex(1040);
 
             switch (gllCursorFactory.getTheme()) {
                 case 'BLUE':
-                    gllCursorFactory.setCursorBorder('1px solid #010088');
+                    gllCursorFactory.setCursorBorder('2px solid #010088');
                     break;
                 case 'BLACK':
                     gllCursorFactory.setCursorBorder('1px solid rgba(20,20,20,0.5)');
@@ -270,14 +270,11 @@
                 default:
                     gllCursorFactory.setCursorBorder('1px solid rgba(20,20,20,0.5)');
                     break;
-
-
             }
 
         }
 
         function lockOnTextElem(elem) {
-            console.log(elem);
             let targetW = elem.getBoundingClientRect().width;
             let targetH = elem.getBoundingClientRect().height;
             let targetX = targetW / 2 + elem.getBoundingClientRect().left;
@@ -297,6 +294,8 @@
 
         }
 
+        /**Finding triggering elements**/
+
         function findTriggeringTextElements(){
             var texts = service.theView.find(".gllText");
             gllCursorFactory.setTriggeringTextElements(texts);
@@ -313,7 +312,6 @@
                 })
 
                 texts[i].onmouseout = (event => {
-
                     var textElement = gllCursorFactory.getTriggeringTextElements()[event.target.identifier];
                     if (textElement.tagName !== 'HTML' && textElement.tagName !== 'BODY') {
                         unlockCursor();
@@ -340,7 +338,6 @@
                 })
 
                 blocks[i].onmouseout = (event => {
-
                     var blockElement = gllCursorFactory.getTriggeringBlockElements()[event.target.identifier];
                     if (blockElement.tagName !== 'HTML' && blockElement.tagName !== 'BODY') {
                         unlockCursor();
@@ -352,6 +349,8 @@
 
         }
 
+
+        /**Exposing functions**/
 
         function _findTriggeringElements(){
 
@@ -379,10 +378,11 @@
                 if (!isCursorLocked()) {
                     gllCursorFactory.setCursorTop(`${cursorY}px`);
                     gllCursorFactory.setCursorLeft(`${cursorX}px`);
-                    console.log(isCursorLocked());
                 }
             });
         }
+
+        /** Return functions from service **/
 
         return{
 
@@ -401,7 +401,7 @@
 }(angular));
 
 
-/*************** Provider definition ***************/
+/*************** Run definition ***************/
 
 (function (ng) {
     'use strict';
@@ -414,51 +414,5 @@
 
     });
 
-/**
- * An angular service to wrap the reCaptcha API
- */
-
-
-
-
 }(angular));
 
-
-
-
-
-/*
-
-
-
-
-
-$( document ).ready(function() {
-
-    var all = $(".SC-block").map(function() {
-        return this.innerHTML;
-    }).get();
-
-    console.log(all.join());
-
-    for (let i = 0; i < elements.length; i++) {
-
-        console.log(elements[i].classList);
-
-
-
-        document.onmousemove = (event => {
-            let cursorX = event.x;
-            let cursorY = event.y;
-
-            if (!IS_LOCKED) {
-                cursor.style.top = `${cursorY}px`;
-                cursor.style.left = `${cursorX}px`;
-            }
-        });
-
-    }
-});
-
-
-*/
