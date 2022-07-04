@@ -194,12 +194,10 @@
 
         function lockCursor(){
             gllCursorFactory.setLockCursor(true)
-            console.log("locked cursor");
         }
 
         function unlockCursor(){
             gllCursorFactory.setLockCursor(false);
-            console.log("unlocked cursor");
         }
 
         function isCursorLocked(){
@@ -213,13 +211,15 @@
             gllCursorFactory.setCursorTransform('translate(-50%,-50%)');
             gllCursorFactory.setCursorBorderRadius('50%');
             gllCursorFactory.setCursorPosition('fixed');
-            gllCursorFactory.setCursorTop('0');
-            gllCursorFactory.setCursorLeft('0');
             gllCursorFactory.setCursorTransition(`all ${gllCursorFactory.getLazyness()}ms ease-out`);
             gllCursorFactory.setCursorZIndex('1040');
             gllCursorFactory.setCursorPointerEvents('none');
 
             switch (gllCursorFactory.getTheme()) {
+                case 'RED':
+                    gllCursorFactory.setCursorBackground('#c11010');
+                    gllCursorFactory.setCursorBorder('1px solid #fff');
+                    break;
                 case 'BLUE':
                     gllCursorFactory.setCursorBackground('#010088');
                     gllCursorFactory.setCursorBorder('1px solid #EFEFEF');
@@ -242,10 +242,11 @@
 
         function cursorText(targetS) {
             gllCursorFactory.setCursorHeight(targetS);
-            gllCursorFactory.setCursorWidth('1px');
+            gllCursorFactory.setCursorWidth('3px');
             gllCursorFactory.setCursorBorderRadius('2pt');
-            gllCursorFactory.setCursorBorder('1px solid #010088');
-
+            gllCursorFactory.setCursorBorder('1px solid #fff');
+            gllCursorFactory.setCursorLeft(`${targetX}px`);
+            gllCursorFactory.setCursorTop(`${targetY}px`);
         }
 
         function cursorBlock(targetX, targetY, targetH, targetW) {
@@ -258,6 +259,9 @@
             gllCursorFactory.setCursorZIndex(1040);
 
             switch (gllCursorFactory.getTheme()) {
+                case 'RED':
+                    gllCursorFactory.setCursorBorder('2px solid #c11010');
+                    break;
                 case 'BLUE':
                     gllCursorFactory.setCursorBorder('2px solid #010088');
                     break;
@@ -275,10 +279,6 @@
         }
 
         function lockOnTextElem(elem) {
-            let targetW = elem.getBoundingClientRect().width;
-            let targetH = elem.getBoundingClientRect().height;
-            let targetX = targetW / 2 + elem.getBoundingClientRect().left;
-            let targetY = targetH / 2 + elem.getBoundingClientRect().top;
             let targetS = window.getComputedStyle(elem).fontSize;
             cursorText(targetS);
 
@@ -305,7 +305,6 @@
                 texts[i].onmouseenter = (event => {
                     var textElement = gllCursorFactory.getTriggeringTextElements()[event.target.identifier];
                     if (textElement.tagName !== 'HTML' && textElement.tagName !== 'BODY') {
-
                         lockOnTextElem(textElement);
 
                     }
@@ -347,6 +346,9 @@
 
             }
 
+            gllCursorFactory.setCursorTop('0');
+            gllCursorFactory.setCursorLeft('0');
+
         }
 
 
@@ -371,7 +373,6 @@
 
         function _startCursor(){
             document.onmousemove = (event => {
-
                 let cursorX = event.x;
                 let cursorY = event.y;
 
