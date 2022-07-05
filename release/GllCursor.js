@@ -4,7 +4,6 @@
  */
 
 
-
 /*************** Module definition ***************/
 
 
@@ -22,27 +21,26 @@
 
     var app = ng.module('gllCursor');
 
-    app.provider('$cursor', function(){
+    app.provider('$cursor', function () {
 
         var provider = this;
 
         provider._theme = "BLACK";
         provider._lazyness = 100;
 
-        provider.cursorTheme = function(theme){
+        provider.cursorTheme = function (theme) {
             provider._theme = theme;
         };
 
-        provider.cursorLazyness = function(lazyness){
+        provider.cursorLazyness = function (lazyness) {
             provider._lazyness = lazyness;
         }
 
-        provider.$get = function(){
+        provider.$get = function () {
             return {
-                customTheme : function(){
+                customTheme: function () {
                     return provider._theme;
-                },
-                customLazyness : function(){
+                }, customLazyness: function () {
                     return provider._lazyness;
                 }
             };
@@ -58,7 +56,7 @@
     'use strict';
 
     var app = ng.module('gllCursor');
-    app.factory('gllCursorFactory', function(){
+    app.factory('gllCursorFactory', function () {
 
         var lazyness = 0;
         var theme = "";
@@ -70,71 +68,49 @@
         return {
             getTheme: function () {
                 return theme;
-            },
-            getLazyness: function () {
+            }, getLazyness: function () {
                 return lazyness;
-            },
-            getTriggeringTextElements: function(){
+            }, getTriggeringTextElements: function () {
                 return triggeringTextElements;
-            },
-            getTriggeringBlockElements: function(){
+            }, getTriggeringBlockElements: function () {
                 return triggeringBlockElements;
-            },
-            getLockCursor: function(){
+            }, getLockCursor: function () {
                 return lockCursor;
-            },
-            setTheme: function(data) {
+            }, setTheme: function (data) {
                 theme = data;
-            },
-            setLazyness: function(data) {
+            }, setLazyness: function (data) {
                 lazyness = data;
-            },
-            setTriggeringTextElements: function(data) {
+            }, setTriggeringTextElements: function (data) {
                 triggeringTextElements = data;
-            },
-            setTriggeringBlockElements: function(data) {
+            }, setTriggeringBlockElements: function (data) {
                 triggeringBlockElements = data;
-            },
-            setCursor: function(data) {
+            }, setCursor: function (data) {
                 cursor = data;
-            },
-            setLockCursor: function(data) {
+            }, setLockCursor: function (data) {
                 lockCursor = data;
-            },
-            setCursorHeight: function(data) {
+            }, setCursorHeight: function (data) {
                 cursor.style.height = data;
-            },
-            setCursorWidth: function(data) {
+            }, setCursorWidth: function (data) {
                 cursor.style.width = data;
-            },
-            setCursorTransform: function(data) {
+            }, setCursorTransform: function (data) {
                 cursor.style.transform = data;
-            },
-            setCursorBorderRadius: function(data) {
+            }, setCursorBorderRadius: function (data) {
                 cursor.style.borderRadius = data;
-            },
-            setCursorPosition: function(data) {
+            }, setCursorPosition: function (data) {
                 cursor.style.position = data;
-            },
-            setCursorTop: function(data) {
+            }, setCursorTop: function (data) {
                 cursor.style.top = data;
-            },
-            setCursorLeft: function(data) {
+            }, setCursorLeft: function (data) {
                 cursor.style.left = data;
-            },
-            setCursorTransition: function(data) {
+            }, setCursorTransition: function (data) {
                 cursor.style.transition = data;
-            },
-            setCursorZIndex: function(data) {
+            }, setCursorZIndex: function (data) {
                 cursor.style.zIndex = data;
-            },
-            setCursorPointerEvents: function(data) {
+            }, setCursorPointerEvents: function (data) {
                 cursor.style.pointerEvents = data;
-            },
-            setCursorBackground: function(data){
+            }, setCursorBackground: function (data) {
                 cursor.style.background = data;
-            },
-            setCursorBorder: function(data){
+            }, setCursorBorder: function (data) {
                 cursor.style.border = data;
             },
 
@@ -146,8 +122,6 @@
     /**
      * An angular service to wrap the reCaptcha API
      */
-
-
 
 
 }(angular));
@@ -164,7 +138,6 @@
     app.controller('gllCursorController', function ($scope, $cursor, gllCursorService, $rootScope) {
 
 
-
     });
 
 }(angular));
@@ -178,7 +151,7 @@
 
     var app = ng.module('gllCursor');
 
-    app.service('gllCursorService', function($cursor, gllCursorFactory){
+    app.service('gllCursorService', function ($cursor, gllCursorFactory) {
 
         /**Service variables**/
         var service = this;
@@ -192,15 +165,15 @@
             gllCursorFactory.setCursor(cursor);
         }
 
-        function lockCursor(){
+        function lockCursor() {
             gllCursorFactory.setLockCursor(true)
         }
 
-        function unlockCursor(){
+        function unlockCursor() {
             gllCursorFactory.setLockCursor(false);
         }
 
-        function isCursorLocked(){
+        function isCursorLocked() {
             return gllCursorFactory.getLockCursor();
         }
 
@@ -245,8 +218,6 @@
             gllCursorFactory.setCursorWidth('3px');
             gllCursorFactory.setCursorBorderRadius('2pt');
             gllCursorFactory.setCursorBorder('1px solid #fff');
-            gllCursorFactory.setCursorLeft(`${targetX}px`);
-            gllCursorFactory.setCursorTop(`${targetY}px`);
         }
 
         function cursorBlock(targetX, targetY, targetH, targetW) {
@@ -296,15 +267,16 @@
 
         /**Finding triggering elements**/
 
-        function findTriggeringTextElements(){
+        function findTriggeringTextElements() {
             var texts = service.theView.find(".gllText");
             gllCursorFactory.setTriggeringTextElements(texts);
-            for(var i = 0; i < texts.length; i++){
+            for (var i = 0; i < texts.length; i++) {
 
                 texts[i].identifier = i;
                 texts[i].onmouseenter = (event => {
                     var textElement = gllCursorFactory.getTriggeringTextElements()[event.target.identifier];
                     if (textElement.tagName !== 'HTML' && textElement.tagName !== 'BODY') {
+
                         lockOnTextElem(textElement);
 
                     }
@@ -313,18 +285,20 @@
                 texts[i].onmouseout = (event => {
                     var textElement = gllCursorFactory.getTriggeringTextElements()[event.target.identifier];
                     if (textElement.tagName !== 'HTML' && textElement.tagName !== 'BODY') {
+
                         unlockCursor();
                         cursorDefaults();
+
                     }
                 })
 
             }
         }
 
-        function findTriggeringBlockElements(){
+        function findTriggeringBlockElements() {
             var blocks = service.theView.find(".gllBlock");
             gllCursorFactory.setTriggeringBlockElements(blocks);
-            for(var i = 0; i < blocks.length; i++){
+            for (var i = 0; i < blocks.length; i++) {
 
                 blocks[i].identifier = i;
                 blocks[i].onmouseenter = (event => {
@@ -339,22 +313,21 @@
                 blocks[i].onmouseout = (event => {
                     var blockElement = gllCursorFactory.getTriggeringBlockElements()[event.target.identifier];
                     if (blockElement.tagName !== 'HTML' && blockElement.tagName !== 'BODY') {
+
                         unlockCursor();
                         cursorDefaults();
+
                     }
                 })
-
             }
 
-            gllCursorFactory.setCursorTop('0');
-            gllCursorFactory.setCursorLeft('0');
 
         }
 
 
         /**Exposing functions**/
 
-        function _findTriggeringElements(){
+        function _findTriggeringElements() {
 
             findTriggeringBlockElements();
             findTriggeringTextElements();
@@ -362,16 +335,17 @@
 
         }
 
-        function _initCursor(){
+        function _initCursor() {
             gllCursorFactory.setLazyness($cursor.customLazyness());
             gllCursorFactory.setTheme($cursor.customTheme());
+
             createGllCursor();
             cursorDefaults();
 
         }
 
 
-        function _startCursor(){
+        function _startCursor() {
             document.onmousemove = (event => {
                 let cursorX = event.x;
                 let cursorY = event.y;
@@ -385,16 +359,11 @@
 
         /** Return functions from service **/
 
-        return{
+        return {
 
-            initCursor : _initCursor,
-            findTriggeringElements : _findTriggeringElements,
-            startCursor : _startCursor
-
+            initCursor: _initCursor, findTriggeringElements: _findTriggeringElements, startCursor: _startCursor
 
         }
-
-
 
 
     });
@@ -408,11 +377,10 @@
     'use strict';
 
     var app = ng.module('gllCursor');
-    app.run(function(gllCursorService){
+    app.run(function (gllCursorService) {
 
         gllCursorService.initCursor();
         gllCursorService.startCursor();
-
     });
 
 }(angular));
