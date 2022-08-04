@@ -185,7 +185,7 @@
             gllCursorFactory.setCursorBorderRadius('50%');
             gllCursorFactory.setCursorPosition('fixed');
             gllCursorFactory.setCursorTransition(`all ${gllCursorFactory.getLazyness()}ms ease-out`);
-            gllCursorFactory.setCursorZIndex('1040');
+            gllCursorFactory.setCursorZIndex('1060');
             gllCursorFactory.setCursorPointerEvents('none');
 
             switch (gllCursorFactory.getTheme()) {
