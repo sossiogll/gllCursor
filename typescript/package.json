@@ -1,0 +1,23 @@
+{
+  "name": "@sossiogll/gll-cursor",
+  "version": "0.1.0",
+  "description": "A cursor that changes shape with what is under it. No framework inside.",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/sossiogll/gllCursor.git", "directory": "typescript" },
+  "type": "module",
+  "sideEffects": ["*.css"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./cursor.css": "./dist/cursor.css"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && cp src/cursor.css dist/cursor.css",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}
