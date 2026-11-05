@@ -2,23 +2,22 @@
 
 A cursor that changes shape with what is under it. It adds information and never hides it.
 
-## Two technologies, two folders, two releases
+## One repository, one folder per technology
 
 | Folder | Package | Technology | Tag of a release |
 | --- | --- | --- | --- |
-| `typescript/` | `@sossiogll/gll-cursor` | TypeScript, no dependencies | `gll-cursor@X.Y.Z` |
-| `react/` | `@sossiogll/gll-cursor-react` | React adapter | `gll-cursor-react@X.Y.Z` |
+| `angular1/` | `@sossiogll/gll-cursor-angular1` | AngularJS 1 | `angular1/vX.Y.Z` |
+| `react/` | `@sossiogll/gll-cursor-react` | React | `react/vX.Y.Z` |
 
-- Each folder is its own package, with its own version and `CHANGELOG.md`. They are released separately.
-- The dependency goes one way: `react/` depends on `typescript/`, as a peer, and holds no cursor logic.
-- `typescript/` knows no framework and no site: colours and sizes are CSS variables.
-- At the root, `GllCursor.js` and `release/GllCursor.js` are the AngularJS module of 2022, kept as they are until it is
-  decided what happens to them.
+- Each folder has its own version and `CHANGELOG.md`, and is released on its own by `.github/workflows/release.yml`,
+  which refuses a tag that differs from the folder's version. Nothing is published by hand.
+- `react/src/core/` knows nothing of React: colours and sizes are CSS variables, and it knows no site.
 
 ## Rules
 
-- Elements declare themselves (`data-cursor`, `data-cursor-label`, `data-cursor-tone`), never by class.
+- Elements declare themselves (`data-cursor`, `data-cursor-label`, `data-cursor-tone`), never by class. The AngularJS
+  module keeps its `gllText` and `gllBlock` classes.
 - Off on touch and with `prefers-reduced-motion`.
 - No library without a reason. A comment says why, never what.
-- Everything runs in Docker: `scripts/pack.sh` tests, builds and packs both.
+- Everything runs in Docker: `scripts/pack.sh` tests and packs both into `packages/`.
 - Branch and pull request, never directly on `master`. No mention of AI tools and no `Co-Authored-By` lines.

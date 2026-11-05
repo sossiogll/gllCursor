@@ -1,15 +1,3 @@
-# gll-cursor
-
-A cursor that changes shape with what is under it.
-
-| Folder | Package | Technology |
-| --- | --- | --- |
-| [`typescript/`](typescript) | `@sossiogll/gll-cursor` | TypeScript, no dependencies |
-| [`react/`](react) | `@sossiogll/gll-cursor-react` | React adapter |
-
-Each is versioned and released on its own. The rest of this page describes the original AngularJS module, still at the
-root of the repository.
-
 # gllCursor
 gllCursor is an angularJS module that add to your website a beautiful cursor that
 changes according to the element pointed.

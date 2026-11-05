@@ -60,5 +60,5 @@ fabric.properties
 package-lock.json
 
 dist/
-release/packages/
+packages/
 *.tgz

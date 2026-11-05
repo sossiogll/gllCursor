@@ -1,0 +1,10 @@
+{
+  "name": "@sossiogll/gll-cursor-angular1",
+  "version": "1.0.0",
+  "description": "A cursor that changes shape with what is under it, as an AngularJS 1 module.",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/sossiogll/gllCursor.git", "directory": "angular1" },
+  "main": "GllCursor.js",
+  "files": ["GllCursor.js", "release"],
+  "peerDependencies": { "angular": "^1.5.0" }
+}

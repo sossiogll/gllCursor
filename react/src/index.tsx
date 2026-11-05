@@ -1,6 +1,6 @@
 "use client";
 
-import { createCursor, cursorWanted, watchCursorConditions, type Cursor } from "@sossiogll/gll-cursor";
+import { createCursor, cursorWanted, watchCursorConditions, type Cursor } from "./core/cursor.js";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from "react";
 
 type CursorState = {
