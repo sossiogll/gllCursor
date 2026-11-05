@@ -9,13 +9,17 @@
   left: 0;
   top: 0;
   z-index: 50;
+  box-sizing: border-box;
   pointer-events: none;
+  opacity: 0;
   will-change: transform;
   --_colour: var(--gll-cursor-colour, #d4ff3a);
   --_text: var(--gll-cursor-text, #0c0c0e);
   --_fill: var(--gll-cursor-fill, #d4ff3a2e);
   --_edge: var(--gll-cursor-edge, transparent);
   --_ring: var(--gll-cursor-ring, 1.5px);
+  --_move: var(--gll-cursor-move, 200ms);
+  --_morph: var(--gll-cursor-morph, 200ms);
 }
 
 /* Over a surface where the cursor's colour cannot be seen: the page says so with data-cursor-tone="dark". */
@@ -28,32 +32,46 @@
 }
 
 .gll-cursor {
-  opacity: 0;
+  border: 0 solid var(--_colour);
   box-shadow: 0 0 0 1px var(--_edge);
 }
 
-.gll-cursor[data-visible="true"] {
+.gll-cursor[data-visible="true"],
+.gll-cursor-label[data-visible="true"] {
   opacity: 1;
 }
 
+.gll-cursor[data-visible="true"] {
+  transition:
+    transform var(--_move) ease-out,
+    width var(--_morph) ease-out,
+    height var(--_morph) ease-out,
+    border-radius var(--_morph) ease-out,
+    border-width var(--_morph) ease-out,
+    border-color var(--_morph) ease-out,
+    background-color var(--_morph) ease-out,
+    box-shadow var(--_morph) ease-out;
+}
+
 .gll-cursor[data-shape="dot"] {
-  background: var(--_fill);
-  border: var(--_ring) solid var(--_colour);
+  background-color: var(--_fill);
+  border-width: var(--_ring);
 }
 
 .gll-cursor[data-shape="caret"] {
-  background: var(--_colour);
+  background-color: var(--_colour);
 }
 
 .gll-cursor[data-shape="frame"] {
-  border: var(--_ring) solid var(--_colour);
+  background-color: transparent;
+  border-width: var(--_ring);
 }
 
 .gll-cursor-label {
-  display: none;
+  visibility: hidden;
   padding: 4px 8px;
   border-radius: var(--gll-cursor-label-radius, 6px);
-  background: var(--_colour);
+  background-color: var(--_colour);
   color: var(--_text);
   font-family: var(--gll-cursor-label-font, ui-monospace, monospace);
   font-size: 12px;
@@ -62,5 +80,8 @@
 }
 
 .gll-cursor-label[data-visible="true"] {
-  display: block;
+  visibility: visible;
+  transition:
+    transform var(--_move) ease-out,
+    opacity var(--_morph) ease-out;
 }

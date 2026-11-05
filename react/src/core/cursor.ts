@@ -1,13 +1,10 @@
-import { approach, shapeFor, type Geometry, type Hit, type Point } from "./shape.js";
+import { shapeFor, type Geometry, type Hit, type Point } from "./shape.js";
 
 const ACTIVE_CLASS = "gll-cursor-active";
 const MOVABLE = "(hover: hover) and (pointer: fine)";
 const REDUCED = "(prefers-reduced-motion: reduce)";
-const SETTLED = 0.1;
 const LABEL_GAP = 8;
-const DEFAULTS = { dot: 18, caret: 3, offset: 6, move: 120, morph: 180 };
-
-type Animated = { left: number; top: number; width: number; height: number; radius: number };
+const DEFAULTS = { dot: 18, caret: 3, offset: 6 };
 
 export type Cursor = { refresh(): void; destroy(): void };
 
@@ -37,7 +34,12 @@ function hitAt(target: Element | null): Hit {
   };
 }
 
-/** One object on the page that takes the shape of what is under the pointer. It adds information and hides none. */
+/**
+ * One object on the page that takes the shape of what is under the pointer. It adds information and hides none.
+ *
+ * This only says where the cursor should be. The stylesheet's transition does the rest: each new target restarts it from
+ * wherever the cursor is, and that is what makes it trail the pointer and come away from a block as if stuck to it.
+ */
 export function createCursor(): Cursor {
   const styles = getComputedStyle(document.documentElement);
   const geometry: Geometry = {
@@ -45,7 +47,6 @@ export function createCursor(): Cursor {
     caret: setting(styles, "caret"),
     offset: setting(styles, "offset"),
   };
-  const lag = { move: setting(styles, "move"), morph: setting(styles, "morph") };
 
   const body = document.createElement("div");
   body.className = "gll-cursor";
@@ -57,55 +58,44 @@ export function createCursor(): Cursor {
   }
 
   let pointer: Point | null = null;
-  let current: Animated | null = null;
   let frame = 0;
-  let lastTime = 0;
 
-  function target() {
-    if (!pointer) return null;
-    const under = document.elementFromPoint(pointer.x, pointer.y);
-    const tone = under?.closest<HTMLElement>("[data-cursor-tone]")?.dataset.cursorTone ?? "signal";
-    return { shape: shapeFor(hitAt(under), pointer, geometry), tone };
+  /** The transitions apply only once visible: the cursor must not fly in from where it last was. */
+  function showAt(element: HTMLElement, place: () => void) {
+    place();
+    if (element.dataset.visible !== "true") {
+      void element.offsetWidth;
+      element.dataset.visible = "true";
+    }
   }
 
-  function paint(now: number) {
+  function paint() {
     frame = 0;
-    const wanted = target();
-    if (!wanted) return;
-    const { shape, tone } = wanted;
+    if (!pointer) return;
+    const under = document.elementFromPoint(pointer.x, pointer.y);
+    const tone = under?.closest<HTMLElement>("[data-cursor-tone]")?.dataset.cursorTone ?? "signal";
+    const shape = shapeFor(hitAt(under), pointer, geometry);
 
-    const elapsed = lastTime ? now - lastTime : 0;
-    lastTime = now;
-    const from: Animated = current ?? shape;
-    current = {
-      left: approach(from.left, shape.left, elapsed, lag.move / 2),
-      top: approach(from.top, shape.top, elapsed, lag.move / 2),
-      width: approach(from.width, shape.width, elapsed, lag.morph / 2),
-      height: approach(from.height, shape.height, elapsed, lag.morph / 2),
-      radius: approach(from.radius, shape.radius, elapsed, lag.morph / 2),
-    };
-
-    body.dataset.shape = shape.kind;
-    body.dataset.tone = tone;
-    body.style.transform = `translate3d(${current.left}px, ${current.top}px, 0)`;
-    body.style.width = `${current.width}px`;
-    body.style.height = `${current.height}px`;
-    body.style.borderRadius = `${current.radius}px`;
+    showAt(body, () => {
+      body.dataset.shape = shape.kind;
+      body.dataset.tone = tone;
+      body.style.transform = `translate3d(${shape.x}px, ${shape.y}px, 0) translate(-50%, -50%)`;
+      body.style.width = `${shape.width}px`;
+      body.style.height = `${shape.height}px`;
+      body.style.borderRadius = `${shape.radius}px`;
+    });
 
     label.dataset.tone = tone;
-    label.dataset.visible = String(shape.label !== null);
-    if (shape.label !== null) {
-      label.textContent = shape.label;
-      const x = current.left + current.width - label.offsetWidth;
-      const y = current.top - label.offsetHeight - LABEL_GAP;
-      label.style.transform = `translate3d(${Math.max(LABEL_GAP, x)}px, ${Math.max(LABEL_GAP, y)}px, 0)`;
+    if (shape.label === null) {
+      label.dataset.visible = "false";
+      return;
     }
-
-    const moving = (["left", "top", "width", "height"] as const).some(
-      (side) => Math.abs(current![side] - shape[side]) > SETTLED,
-    );
-    if (moving) schedule();
-    else lastTime = 0;
+    showAt(label, () => {
+      label.textContent = shape.label;
+      const right = Math.max(label.offsetWidth + LABEL_GAP, shape.x + shape.width / 2);
+      const top = Math.max(label.offsetHeight + LABEL_GAP, shape.y - shape.height / 2 - LABEL_GAP);
+      label.style.transform = `translate3d(${right}px, ${top}px, 0) translate(-100%, -100%)`;
+    });
   }
 
   function schedule() {
@@ -116,16 +106,13 @@ export function createCursor(): Cursor {
     if (event.pointerType === "touch") return;
     pointer = { x: event.clientX, y: event.clientY };
     document.documentElement.classList.add(ACTIVE_CLASS);
-    body.dataset.visible = "true";
     schedule();
   }
 
   function onLeave() {
     body.dataset.visible = "false";
     label.dataset.visible = "false";
-    current = null;
     pointer = null;
-    lastTime = 0;
   }
 
   const options = { passive: true } as const;

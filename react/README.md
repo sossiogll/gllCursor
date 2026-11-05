@@ -30,5 +30,5 @@ CSS variables, all optional:
 | `--gll-cursor-colour`, `-text`, `-fill`, `-edge` | The cursor, its label's text, the dot's fill, a thin edge for light grounds |
 | `--gll-cursor-dark-colour`, `-dark-text` | The same over `data-cursor-tone="dark"` |
 | `--gll-cursor-dot`, `-caret`, `-ring`, `-offset` | Sizes |
-| `--gll-cursor-move`, `-morph` | Lag of position and shape, in ms |
+| `--gll-cursor-move`, `-morph` | How long position and form take to catch up, 200ms by default |
 | `--gll-cursor-label-font`, `-label-radius` | The label |
