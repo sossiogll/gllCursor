@@ -1,5 +1,10 @@
 # @sossiogll/gll-cursor-react
 
+## 0.2.1
+
+No change to the package. This release exists so that gllHub reads `.github/showcase.md`, which it takes from the latest
+release.
+
 ## 0.2.0
 
 Moves as the AngularJS module does. A CSS transition on position, size, radius, border and fill restarts from where the
