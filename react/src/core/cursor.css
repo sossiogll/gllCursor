@@ -1,0 +1,66 @@
+.gll-cursor-active,
+.gll-cursor-active * {
+  cursor: none !important;
+}
+
+.gll-cursor,
+.gll-cursor-label {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  pointer-events: none;
+  will-change: transform;
+  --_colour: var(--gll-cursor-colour, #d4ff3a);
+  --_text: var(--gll-cursor-text, #0c0c0e);
+  --_fill: var(--gll-cursor-fill, #d4ff3a2e);
+  --_edge: var(--gll-cursor-edge, transparent);
+  --_ring: var(--gll-cursor-ring, 1.5px);
+}
+
+/* Over a surface where the cursor's colour cannot be seen: the page says so with data-cursor-tone="dark". */
+.gll-cursor[data-tone="dark"],
+.gll-cursor-label[data-tone="dark"] {
+  --_colour: var(--gll-cursor-dark-colour, #0c0c0e);
+  --_text: var(--gll-cursor-dark-text, #d4ff3a);
+  --_fill: color-mix(in srgb, var(--gll-cursor-dark-colour, #0c0c0e) 15%, transparent);
+  --_edge: transparent;
+}
+
+.gll-cursor {
+  opacity: 0;
+  box-shadow: 0 0 0 1px var(--_edge);
+}
+
+.gll-cursor[data-visible="true"] {
+  opacity: 1;
+}
+
+.gll-cursor[data-shape="dot"] {
+  background: var(--_fill);
+  border: var(--_ring) solid var(--_colour);
+}
+
+.gll-cursor[data-shape="caret"] {
+  background: var(--_colour);
+}
+
+.gll-cursor[data-shape="frame"] {
+  border: var(--_ring) solid var(--_colour);
+}
+
+.gll-cursor-label {
+  display: none;
+  padding: 4px 8px;
+  border-radius: var(--gll-cursor-label-radius, 6px);
+  background: var(--_colour);
+  color: var(--_text);
+  font-family: var(--gll-cursor-label-font, ui-monospace, monospace);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.gll-cursor-label[data-visible="true"] {
+  display: block;
+}

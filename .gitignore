@@ -58,3 +58,7 @@ fabric.properties
 
 #Modules
 package-lock.json
+
+dist/
+packages/
+*.tgz

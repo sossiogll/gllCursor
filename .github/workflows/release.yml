@@ -1,0 +1,45 @@
+name: Release
+
+# Pushing angular1/vX.Y.Z or react/vX.Y.Z releases that folder and nothing else.
+on:
+  push:
+    tags:
+      - "angular1/v*"
+      - "react/v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Read the tag
+        run: |
+          folder="${GITHUB_REF_NAME%%/*}"
+          version="${GITHUB_REF_NAME#*/v}"
+          declared="$(node -p "require('./$folder/package.json').version")"
+          if [ "$version" != "$declared" ]; then
+            echo "The tag says $version but $folder/package.json says $declared"
+            exit 1
+          fi
+          echo "FOLDER=$folder" >> "$GITHUB_ENV"
+      - name: Test and build React
+        if: env.FOLDER == 'react'
+        working-directory: react
+        run: |
+          npm install --no-audit --no-fund
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Pack
+        working-directory: ${{ env.FOLDER }}
+        run: npm pack --pack-destination "$RUNNER_TEMP"
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP"/*.tgz --title "$GITHUB_REF_NAME" --notes-file "$FOLDER/CHANGELOG.md"
